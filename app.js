@@ -28,9 +28,9 @@ var listItem = [
 // STATE MODIFICATIONS FUNCTIONS
 //////////////////////////////////////////
 // push the item to the end of the list with the title of the item (value) and the checked as false
-function addItem(state, item) {
+function addItem(state, newItem) {
   state.items.push({
-      title: item,
+      title: newItem,
       checked: false
     })
 };
@@ -43,18 +43,18 @@ function checkItem (state, index, newState) {
 
 //Get item
 // Get the index/[position of the item being interacted with
-function getItem(state, itemIndex) {
-  return state.item[itemIndex]
+function getItem(state, item, itemIndex) {
+  return state.items[itemIndex]
 }
 
 // Render functions
 function renderList (state) {
   var itemsHTML = ''
 
-  state.items.forEach(function(item, index) {
-    var itemHTML = listItem.replace('@title', item.title ).replace('@index', index);
+  state.items.forEach(function(items, index) {
+    var itemHTML = listItem.replace('@title', items.title ).replace('@index', index);
 
-    item.checked
+    items.checked
       ? itemHTML = itemHTML.replace('@check', 'shopping-item__checked')
       : itemHTML = itemHTML.replace('@check', '')
 
@@ -70,11 +70,26 @@ function renderList (state) {
 
 //check as complete
 //uses event delegations to go up the bubble and create a function from there
+function checkItemClick (checkButton, listElement, state, items) {
+  listElement.on( "click", checkButton, function( event ) {
+      event.preventDefault();
+      var itemIndex = $(this).closest('li').index();
+      console.log(itemIndex)
+
+      checkItem (state, items, {
+        title: state.items.title,
+        checked: !state.items.checked
+      });
+      renderList(state)
+  });
+}
+
 //add to shopping list
-function addItemSubmission (formElement, formInput, listItem, state) {
+function addItemSubmission (formElement, item, formInput, state) {
   formElement.submit(function(event) {
     event.preventDefault();
-    var newItem = formElement.find(formInput).val();
+    var newItem = $('#shopping-list-entry').val();
+    console.log(newItem)
     addItem(state, newItem);
     renderList(state, newItem);
   });
@@ -85,10 +100,6 @@ function addItemSubmission (formElement, formInput, listItem, state) {
 //   $( ".shopping-list" ).on( "click", ".shopping-item-toggle", function( event ) {
 //       event.preventDefault();
 //       $(this).parent().parent().find('.shopping-item').toggleClass('shopping-item__checked');
-//
-//       // - [ ] find the referenced object on state.items
-//       // - [ ] mark that object as checked
-//       // - [ ] render everything again
 //   });
 // }
 //delete item
@@ -118,12 +129,14 @@ $(function () {
   //create variables for all the items we will be interacting with -- take out all classes aboce and only put here if possible
   var formElement = $('#js-shopping-list-form');
   var formInput = $('#shopping-list-entry');
-  var listItem = $('.shopping-list li');
+  var dataIndex = $('data-item-id');
+  var listElement = $('.shopping-list');
   var checkButton = $('.shopping-item-toggle');
   var deleteButton = $('.shopping-item-delete');
 
   //render the list for intial load since we changed it to use ALL js and no HTML
   renderList(state);
   //call the add item function with the variables from above that are relevant to that function
-  addItemSubmission (formElement, formInput, listItem, state);
+  addItemSubmission (formElement, formInput, listElement, state);
+  // checkItemClick (checkButton, listElement, state);
 });

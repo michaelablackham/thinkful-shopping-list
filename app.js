@@ -2,9 +2,6 @@
 // Single state objects and variables
 var state = {
     items: [
-      {title: 'Learn JavaScript', checked: false},
-      {title: 'Learn state management', checked: false},
-      {title: 'Learn state management', checked: false},
       {title: 'apples', checked: false},
       {title: 'oranges', checked: false},
       {title: 'milk', checked: true},
@@ -15,20 +12,19 @@ var state = {
 console.log(state)
 
 // State modification functions
+// push the item to the end of the list with the title of the item (value) and the checked as false
 var addItem = function(state, item) {
-    state.items.push(item);
-    console.log(item)
+  state.items.push({
+      title: item,
+      checked: false
+    })
 };
 
 
 //Get item
+// Get the index/[position of the item being interacted with
 function getItem(state, itemIndex) {
   return state.item[itemIndex]
-}
-
-//DELETE item//Get item
-function deleteItem(state, itemIndex) {
-  state.splice(itemIndex)
 }
 
 var listItem = [
@@ -46,26 +42,15 @@ var listItem = [
 ].join('');
 
 // Render functions
-var renderList = function(state) {
+function renderList (state) {
   var itemsHTML = ''
 
   state.items.forEach(function(item, index) {
-    var itemHTML = listItem.replace('@title', item.title );
+    var itemHTML = listItem.replace('@title', item.title ).replace('@index', index);
 
-    itemHTML += itemHTML.replace('@check', item.checked ? 'shopping-item__checked' : '')
-
-    // item.checked
-    //   ? itemHTML.replace('@check', 'shopping-item__checked')
-    //   : itemHTML.replace('@check', '')
-
-    // check to see if checked === true
-    // if ( item.checked ) {
-    //   // if checked === true then we add this class to shopping-item element
-    //   itemHTML = itemHTML.replace('@check', 'shopping-item__checked')
-    // }
-    // else {
-    //   itemHTML = itemHTML.replace('@check', '')
-    // }
+    item.checked
+      ? itemHTML = itemHTML.replace('@check', 'shopping-item__checked')
+      : itemHTML = itemHTML.replace('@check', '')
 
     itemsHTML += itemHTML
   });
@@ -79,27 +64,37 @@ var renderList = function(state) {
 
 //check as complete
 //uses event delegations to go up the bubble and create a function from there
-function markItem () {
-  $( ".shopping-list" ).on( "click", ".shopping-item-toggle", function( event ) {
-      event.preventDefault();
-      $(this).parent().parent().find('.shopping-item').toggleClass('shopping-item__checked');
-
-      // - [ ] find the referenced object on state.items
-      // - [ ] mark that object as checked
-      // - [ ] render everything again
-  });
+//DELETE item//Get item
+function checkItem (state, index, newState) {
+  state.items[index] = newState;
 }
+
+// function markItem () {
+//   $( ".shopping-list" ).on( "click", ".shopping-item-toggle", function( event ) {
+//       event.preventDefault();
+//       $(this).parent().parent().find('.shopping-item').toggleClass('shopping-item__checked');
+//
+//       // - [ ] find the referenced object on state.items
+//       // - [ ] mark that object as checked
+//       // - [ ] render everything again
+//   });
+// }
 //delete item
 //uses event delegations to go up the bubble and create a function from there
-function deleteItem () {
-  $( ".shopping-list" ).on( "click", ".shopping-item-delete", function( ev ) {
-      ev.preventDefault();
-
-      console.log({this: this, ev: ev});
-
-      $(this).parent().parent().remove();
-  });
-}
+//DELETE item//Get item
+// function deleteItem(state, itemIndex) {
+//   state.splice(itemIndex)
+// }
+//
+// function deleteItem () {
+//   $( ".shopping-list" ).on( "click", ".shopping-item-delete", function( ev ) {
+//       ev.preventDefault();
+//
+//       console.log({this: this, ev: ev});
+//
+//       $(this).parent().parent().remove();
+//   });
+// }
 
 //add to shopping list
 function addItemSubmission () {
@@ -118,7 +113,5 @@ function addItemSubmission () {
 
 $(function () {
   renderList(state);
-  markItem ();
-  deleteItem ();
   addItemSubmission ();
 });

@@ -15,10 +15,10 @@ var listItem = [
     '<span class="shopping-item @check">@title</span>',
     '<div class="shopping-item-controls">',
       '<button class="shopping-item-toggle">',
-        '<span class="button-label">check</span>',
+        '<span class="button-label-check">check</span>',
       '</button>',
       '<button class="shopping-item-delete">',
-        '<span class="button-label">delete</span>',
+        '<span class="button-label-delete">delete</span>',
       '</button>',
     '</div>',
   '</li>'
@@ -35,6 +35,11 @@ function addItem(state, newItem) {
     })
 };
 
+//GET ITEM
+function getItem(state, itemIndex) {
+  return state.items[itemIndex];
+}
+
 //CHECK ITEM
 function checkItem (state, index, newState) {
   state.items[index] = newState;
@@ -45,12 +50,6 @@ function deleteItem(state, itemIndex) {
   state.items.splice(itemIndex, 1);
 }
 
-
-//Get item
-// Get the index/[position of the item being interacted with
-// function getItem(state, item, itemIndex) {
-//   return state.items[itemIndex]
-// }
 
 // Render functions
 function renderList (state) {
@@ -76,32 +75,36 @@ function renderList (state) {
 //check as complete
 //uses event delegations to go up the bubble and create a function from there
 function checkItemClick (checkButton, listElement, state, dataIndex) {
-  listElement.on( "click", checkButton, function( event ) {
+  listElement.on( "click", '.shopping-item-toggle', function( event ) { //<<<<<<<<<
+      //I needed to use the actual class rather than the variable in order for this to work
       event.preventDefault();
-      var itemIndex =$(event.target.closest('li')).attr(dataIndex);
-      console.log(itemIndex)
+      var itemIndex = $(event.target.closest('li')).attr(dataIndex);
+      console.log('checked' + itemIndex);
+      console.log(event.target);
+      var oldItem = getItem(state, itemIndex);
 
-      // checkItem (state, items, {
-      //   title: state.items.title,
-      //   checked: !state.items.checked
-      // });
-      renderList(state)
+      checkItem(state, itemIndex, {
+        title: oldItem.title,
+        checked: !oldItem.checked
+      });
+
+      $(event.target).closest('li').toggleClass('shopping-item__checked');
+      renderList(state);
   });
 }
 
 //DELETE ITEM FROM list
 function deleteItemClick (deleteButton, listElement, state, dataIndex) {
-  listElement.on( "click", deleteButton, function( event ) {
+  listElement.on( "click", '.shopping-item-delete', function( event ) { //<<<<<<<<<
+      //I needed to use the actual class rather than the variable in order for this to work
       event.preventDefault();
-      var itemIndex =$(event.target.closest('li')).attr(dataIndex); //<<<<<<<<<
+      var itemIndex = $(event.target.closest('li')).attr(dataIndex); //<<<<<<<<<
       // why did i need to use even.target above instead of 'this' <<<<<<<<<<
-      console.log(itemIndex)
+      console.log('delete' + itemIndex)
+      console.log(event.target);
 
-      // checkItem (state, items, {
-      //   title: state.items.title,
-      //   checked: !state.items.checked
-      // });
-      renderList(state)
+      deleteItem(state, itemIndex);
+      renderList(state);
   });
 }
 
@@ -115,26 +118,6 @@ function addItemSubmission (formElement, item, formInput, state) {
     renderList(state, newItem);
   });
 }
-
-
-//delete item
-//uses event delegations to go up the bubble and create a function from there
-//DELETE item//Get item
-// function deleteItem(state, itemIndex) {
-//   state.splice(itemIndex)
-// }
-//
-// function deleteItem () {
-//   $( ".shopping-list" ).on( "click", ".shopping-item-delete", function( ev ) {
-//       ev.preventDefault();
-//
-//       console.log({this: this, ev: ev});
-//
-//       $(this).parent().parent().remove();
-//   });
-// }
-
-
 
 //////////////////////////////////////////
 // FINAL RENDER LIST

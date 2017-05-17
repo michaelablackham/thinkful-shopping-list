@@ -10,6 +10,7 @@ var state = {
     ]
 };
 
+//create template for the HTML we will be working with
 var listItem = [
   '<li data-item-id="@index">',
     '<span class="shopping-item @check">@title</span>',
@@ -27,7 +28,7 @@ var listItem = [
 //////////////////////////////////////////
 // STATE MODIFICATIONS FUNCTIONS
 //////////////////////////////////////////
-// push the item to the end of the list with the title of the item (value) and the checked as false
+// push the item to the end of the list with the title of the item (value) and the checked as default=false
 function addItem(state, newItem) {
   state.items.push({
       title: newItem,
@@ -76,11 +77,11 @@ function renderList (state) {
 //uses event delegations to go up the bubble and create a function from there
 function checkItemClick (checkButton, listElement, state, dataIndex) {
   listElement.on( "click", '.shopping-item-toggle', function( event ) { //<<<<<<<<<
-      //I needed to use the actual class rather than the variable in order for this to work
+      //I needed to use the actual class rather than the variable in order for this to work-- WHY?
       event.preventDefault();
       var itemIndex = $(event.target.closest('li')).attr(dataIndex);
-      console.log('checked' + itemIndex);
-      console.log(event.target);
+      // console.log('checked' + itemIndex);
+      // console.log(event.target);
       var oldItem = getItem(state, itemIndex);
 
       checkItem(state, itemIndex, {
